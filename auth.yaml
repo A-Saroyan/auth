@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth-api
+          image: asaroyan/my-ci-image:v1.1.1
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          env:
+            - name: SERVICE
+              value: 'auth'
+            - name: NODE_ENV
+              value: 'development'
+            - name: PORT
+              value: '3001'
+            - name: JWT_SECRET
+              value: 'secret'
+            - name: POSTGRES_URL
+              value: "postgres://appuser:appuser_password@my-postgres-postgresql-0.my-postgres-postgresql-hl.db-ns.svc.cluster.local:5432/appdb"        
+          livenessProbe:               # <-- Liveness probe
+            httpGet:
+              path: /healthz
+              port: 3001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            
+          readinessProbe:              # <-- Readiness probe
+            httpGet:
+              path: /healthz
+              port: 3001
+            initialDelaySeconds: 20
+            periodSeconds: 5
+      imagePullSecrets:
+        - name: dockerhub-secret
+
+ 
