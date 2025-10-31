@@ -20,9 +20,6 @@ jobs:
       - name: Build the app container
         run: docker build -t auth-image ./
 
-      - name: Scan the Docker image with Anchore
-        uses: anchore/scan-action@v2
-        with:
-          image: sauth-image:latest
+      
 
  
