@@ -1,0 +1,30 @@
+name: Docker-Auth
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]  # test on multiple Node versions
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      
+      - name: Build the app container
+        run: docker build -t auth-image ./
+
+      - name: Scan the Docker image with Anchore
+        uses: anchore/scan-action@v2
+        with:
+          image: sauth-image:latest
+
+ 
