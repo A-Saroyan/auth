@@ -24,7 +24,7 @@ jobs:
       
 
       - name: Build Docker image
-        run: docker build -t your-username/my-image:latest .    
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}my-ci-image:v1.1.1  .    
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/my-ci-image:v1.1.1
@@ -32,8 +32,7 @@ jobs:
       
         
 
-      - name: Build the app container
-        run: docker build -t auth-image ./
+      
 
       
 
